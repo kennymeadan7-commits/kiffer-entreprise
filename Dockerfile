@@ -9,6 +9,6 @@ COPY scripts ./scripts
 COPY *.html ./
 COPY data/shop.json ./data/shop.json
 ENV NODE_ENV=production
-ENV DATA_DIR=/data
+ENV DATA_DIR=/app/data
 EXPOSE 3000
 CMD ["node", "server/index.js"]
