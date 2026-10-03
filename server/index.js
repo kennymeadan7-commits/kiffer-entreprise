@@ -210,7 +210,7 @@ function seed() {
   insU.run(sellerId, "Koffi Mensah", "vendeur@streammarket.com", hashPassword("seller123"), "SELLER", "active", now);
 
   const services = [
-    ["svc-netflix", "Création de compte Netflix", "Netflix", "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.", 4500, "tv", "#b81d24", 4.8, 0, ["Compte Netflix créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Netflix n'est enregistré."]
+    ["svc-netflix", "Création de compte Netflix", "Streaming", "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.", 4500, "tv", "#b81d24", 4.8, 0, ["Compte Netflix créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Netflix n'est enregistré."]
   ];
   const insS = db.prepare(
     `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
@@ -230,7 +230,7 @@ function ensureNetflixOnly() {
   if (!existing && owner) {
     db.prepare(
       `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
-       VALUES ('svc-netflix', ?, 'Création de compte Netflix', 'Netflix', ?, 4500, 1, 'tv', '#b81d24', 'active', 4.8, 0, ?, ?, ?)`
+       VALUES ('svc-netflix', ?, 'Création de compte Netflix', 'Streaming', ?, 4500, 1, 'tv', '#b81d24', 'active', 4.8, 0, ?, ?, ?)`
     ).run(
       owner.id,
       "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.",
@@ -240,7 +240,7 @@ function ensureNetflixOnly() {
     );
   } else if (existing) {
     db.prepare(
-      "UPDATE services SET name = 'Création de compte Netflix', category = 'Netflix', status = 'active', description = ? WHERE id = 'svc-netflix'"
+      "UPDATE services SET name = 'Création de compte Netflix', category = 'Streaming', status = 'active', description = ? WHERE id = 'svc-netflix'"
     ).run("Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.");
   }
 }

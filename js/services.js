@@ -122,39 +122,13 @@ function renderCatalog() {
 }
 
 function renderHomeCategories() {
-  const activeCats = {};
-  SM.services().forEach(function (s) {
-    if (s.status === "active") activeCats[s.category] = true;
-  });
-  const meta = [
-    ["Streaming", "img/logos/netflix.svg", "Abonnement Netflix.", 4500, "#0b0b0b"],
-    ["Musique", "img/logos/spotify.svg", "Abonnements audio premium.", 2500, "#1db954"],
-    ["Stockage", "img/logos/icloud.svg", "Sauvegarde et stockage cloud.", 2200, "#1d4ed8"],
-    ["Productivité", "img/logos/microsoft.svg", "Outils bureautiques et collaboration.", 4500, "#0f6cbd"],
-    ["Design", "img/logos/canva.svg", "Création graphique professionnelle.", 4200, "#00c4cc"],
-    ["Logiciels", "img/logos/adobecreativecloud.svg", "Suites logicielles sous licence.", 6500, "#2c0614"]
-  ].filter(function (m) {
-    return activeCats[m[0]];
-  });
-  if (!meta.length) {
-    document.getElementById("popular-home").innerHTML = '<div class="empty">Aucune offre pour le moment.</div>';
+  const root = document.getElementById("popular-home");
+  const list = SM.services().filter(function (s) { return s.status === "active"; });
+  if (!list.length) {
+    root.innerHTML = '<div class="empty">Aucune offre pour le moment.</div>';
     return;
   }
-  document.getElementById("popular-home").innerHTML = meta
-    .map(function (m) {
-      return (
-        '<article class="card card-media"><div class="logo-tile" style="background:' + m[4] + '"><img src="' + m[1] + '" alt="Logo ' + m[0] + '"></div><div class="card-body"><h3>' +
-        m[0] +
-        "</h3><p class='muted'>" +
-        m[2] +
-        '</p><div class="price">À partir de ' +
-        SM.formatMoney(m[3]) +
-        '</div><a class="btn btn-ghost" href="services.html?cat=' +
-        encodeURIComponent(m[0] === "Stockage" ? "Stockage" : m[0]) +
-        '">Voir les offres</a></div></article>'
-      );
-    })
-    .join("");
+  root.innerHTML = list.map(serviceCard).join("");
 }
 
 function renderDetail() {
