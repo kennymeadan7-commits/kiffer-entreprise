@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function render() {
     const steps =
-      '<div class="steps" style="grid-template-columns:repeat(3,1fr)">' +
+      '<div class="steps steps-3">' +
       ["1. Vos coordonnées", "2. Paiement", "3. WhatsApp"]
         .map(function (label, i) {
           const n = i + 1;
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         '<label class="pay-option"><input type="radio" name="pay" value="momo" checked> J\'envoie le MoMo / Moov</label>' +
         '<label class="pay-option"><input type="radio" name="pay" value="manual"> Je paie après contact WhatsApp</label>' +
         '<p class="legal-box">Pas de carte bancaire. Pas de mot de passe Netflix.</p>' +
-        '<button class="btn btn-ghost" id="back">Retour</button> <button class="btn btn-primary" id="next">Valider la commande</button></div>';
+        '<div class="btn-row"><button class="btn btn-ghost" id="back">Retour</button><button class="btn btn-primary" id="next">Valider la commande</button></div></div>';
     }
     if (state.step === 3) {
       const wa = SM.waLink(waMessage());

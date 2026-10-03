@@ -772,7 +772,10 @@ function serveStatic(req, res, url) {
       res.writeHead(404);
       return res.end("Not found");
     }
-    res.writeHead(200, { "Content-Type": MIME[path.extname(full)] || "application/octet-stream" });
+    const ext = path.extname(full).toLowerCase();
+    const headers = { "Content-Type": MIME[ext] || "application/octet-stream" };
+    if (ext === ".html" || ext === ".css" || ext === ".js") headers["Cache-Control"] = "no-cache";
+    res.writeHead(200, headers);
     res.end(data);
   });
 }

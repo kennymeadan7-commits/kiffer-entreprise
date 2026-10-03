@@ -20,7 +20,7 @@
       const root = document.getElementById("profile-root");
       root.innerHTML =
         "<h2>Mon profil</h2>" +
-        '<div class="grid" style="grid-template-columns:1fr 1fr;gap:16px">' +
+        '<div class="grid grid-2">' +
         '<form class="card" id="name-form"><h3>Identité</h3>' +
         '<label>Nom</label><input class="input" id="p-name" value="' + user.name.replace(/"/g, "") + '">' +
         '<p class="muted">' + user.email + " · " + user.role + "</p>" +

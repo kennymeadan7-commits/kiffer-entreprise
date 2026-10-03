@@ -146,9 +146,9 @@ function renderDetail() {
   function paint() {
     root.innerHTML =
       '<div class="container">' +
-      '<div class="breadcrumbs"><a href="index.html">Accueil</a> / <a href="services.html">Services</a> / ' + s.name + "</div>" +
+      '<div class="breadcrumbs"><a href="index.html">Accueil</a><span>/</span><a href="services.html">Services</a><span>/</span><span>' + s.name + "</span></div>" +
       '<a class="btn btn-ghost btn-sm" href="services.html">← Retour</a>' +
-      '<div class="grid grid-3" style="margin-top:16px;grid-template-columns:1.4fr .8fr">' +
+      '<div class="grid offer-layout" style="margin-top:16px">' +
       '<article class="card card-media">' +
       SM.coverHtml(s, "hero") +
       '<div class="card-body">' +

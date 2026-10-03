@@ -35,7 +35,7 @@ function renderCart() {
     '<div class="table-wrap"><table><thead><tr><th>Service</th><th>Durée</th><th>Prix unitaire</th><th>Quantité</th><th>Sous-total</th><th></th></tr></thead><tbody>' +
     rows +
     "</tbody></table></div>" +
-    '<div class="grid grid-3" style="margin-top:18px;grid-template-columns:1fr 320px">' +
+    '<div class="grid cart-layout" style="margin-top:18px">' +
     '<div><a class="btn btn-ghost" href="services.html">Continuer les achats</a></div>' +
     '<div class="card"><div class="muted">Total</div><div class="price" style="font-size:28px">' +
     SM.formatMoney(SM.cartTotal()) +

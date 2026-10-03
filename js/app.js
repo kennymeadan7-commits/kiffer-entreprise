@@ -567,19 +567,19 @@
         user.name +
         "</a>" +
         '<button class="btn btn-ghost btn-sm hide-sm" id="logout-btn">Déconnexion</button>'
-      : '<a class="btn btn-ghost btn-sm hide-sm" href="login.html">Connexion</a><a class="btn btn-primary btn-sm" href="register.html">Créer un compte</a>';
+      : '<a class="btn btn-ghost btn-sm hide-sm" href="login.html">Connexion</a><a class="btn btn-primary btn-sm hide-sm" href="register.html">Créer un compte</a>';
     return (
       '<header class="navbar"><div class="container navbar-inner">' +
       '<a class="brand" href="index.html"><span class="brand-mark">' +
       mark +
-      "</span>" +
+      '</span><span class="brand-name">' +
       shopName +
-      "</a>" +
+      "</span></a>" +
       '<nav class="nav-links" id="nav-links">' +
       nav +
       (user
         ? '<a href="dashboard.html">Espace</a><a href="#" id="logout-link">Déconnexion</a>'
-        : '<a href="login.html">Connexion</a>') +
+        : '<a href="login.html">Connexion</a><a class="only-sm" href="register.html">Créer un compte</a>') +
       "</nav>" +
       '<div class="nav-actions">' +
       '<button class="btn btn-ghost btn-sm menu-toggle" id="menu-toggle" aria-label="Menu">☰</button>' +
