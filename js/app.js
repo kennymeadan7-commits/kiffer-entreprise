@@ -601,7 +601,7 @@
       "<div><strong>" +
       shopName +
       "</strong><div class='muted'>" +
-      (shop.owner ? "Boutique de " + shop.owner : "Abonnements numériques légaux") +
+      (shop.owner ? "Comptes Netflix de " + shop.owner : "Création de comptes Netflix") +
       (shop.city ? " · " + shop.city : "") +
       "</div></div>" +
       "<div>" +
@@ -620,15 +620,15 @@
       ["dashboard.html", "fa-gauge-high", "Tableau de bord"],
       ["orders.html", "fa-receipt", "Mes commandes"],
       ["profile.html", "", "Mon profil"],
-      ["services.html", "fa-store", "Explorer"],
+      ["services.html", "fa-tv", "Netflix"],
       ["cart.html", "fa-bag-shopping", "Panier"]
     ];
     const adminLinks = [
       ["dashboard.html", "fa-chart-line", "Vue d'ensemble"],
-      ["admin-services.html", "fa-cubes", "Services"],
+      ["admin-services.html", "fa-tv", "Offre Netflix"],
       ["admin-orders.html", "fa-clipboard-list", "Commandes"],
       ["vend.html", "", "Téléphone"],
-      ["admin-users.html", "fa-users", "Clients"],
+      ["admin-users.html", "fa-users", "Mes clients"],
       ["admin-shop.html", "", "Ma boutique"],
       ["profile.html", "", "Mon profil"]
     ];

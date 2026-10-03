@@ -86,13 +86,13 @@ function renderAdminHome() {
     const clients = stats.lastClients || [];
     SM.cache.orders = stats.recentOrders || SM.orders();
     root.innerHTML =
-      "<h2>Tableau de bord admin</h2>" +
-      '<p class="muted">Données SQLite + sessions httpOnly. Les mots de passe sont hashés.</p>' +
+      "<h2>Clients Netflix</h2>" +
+      '<p class="muted">Comptes clients et commandes de création Netflix. Les mots de passe ne sont jamais affichés.</p>' +
       '<div class="kpi">' +
       kpi("Chiffre d'affaires", SM.formatMoney(stats.revenue)) +
       kpi("Commandes", stats.ordersCount) +
       kpi("Clients", stats.clientsCount) +
-      kpi("Services actifs", stats.activeServices) +
+      kpi("Offre active", stats.activeServices) +
       "</div>" +
       '<div class="card" style="margin:18px 0"><h3>Évolution (démo)</h3><canvas id="chart" height="120"></canvas></div>' +
       '<div class="grid grid-3">' +
@@ -168,11 +168,10 @@ function renderAdminServices() {
       })
       .join("");
     root.innerHTML =
-      '<div class="page-head"><h2>Services</h2><button class="btn btn-primary" id="add-svc">Ajouter un service</button></div>' +
+      '<div class="page-head"><h2>Offre Netflix</h2></div>' +
       '<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Durée</th><th>Statut</th><th></th></tr></thead><tbody>' +
       rows +
       "</tbody></table></div>";
-    document.getElementById("add-svc").onclick = function () { formModal(null); };
     root.querySelectorAll("[data-edit]").forEach(function (b) {
       b.onclick = function () {
         formModal(SM.services().find(function (s) { return s.id === b.getAttribute("data-edit"); }));
@@ -339,7 +338,7 @@ function renderAdminUsers() {
   const root = document.getElementById("admin-users-root");
   function paint(list) {
     const rows = list
-      .filter(function (u) { return u.role === "CLIENT" || u.role === "SELLER"; })
+      .filter(function (u) { return u.role === "CLIENT"; })
       .map(function (u) {
         return (
           "<tr><td>" + u.name + "</td><td>" + u.email + "</td><td>" + SM.formatDate(u.createdAt) + "</td><td>" + (u.ordersCount || 0) +
@@ -351,7 +350,8 @@ function renderAdminUsers() {
       })
       .join("");
     root.innerHTML =
-      "<h2>Clients & vendeurs</h2>" +
+      "<h2>Mes clients Netflix</h2>" +
+      '<p class="muted">Chaque personne qui commande a son espace. Vous pouvez en suivre autant que vous voulez.</p>' +
       '<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Email</th><th>Inscription</th><th>Commandes</th><th>Total dépensé</th><th>Statut</th><th></th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="7">Aucun utilisateur</td></tr>') +
       "</tbody></table></div>";

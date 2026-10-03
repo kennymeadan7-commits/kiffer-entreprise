@@ -24,10 +24,10 @@ const DEFAULT_SHOP = {
   whatsapp: "22965481284",
   momoMtn: "65 48 12 84",
   momoMoov: "65 48 12 84",
-  headline: "Kiffer Entreprise — abonnement Netflix.",
+  headline: "Kiffer Entreprise — création de comptes Netflix.",
   tagline:
-    "Pour le moment, uniquement Netflix. Vous commandez, vous payez au 65 48 12 84, on finalise proprement — sans jamais demander le mot de passe de votre compte.",
-  rule: "Pas de comptes partagés, pas de mots de passe Netflix. Activation via un canal officiel uniquement."
+    "Un seul service : la création de votre compte Netflix. Vous commandez, vous payez au 65 48 12 84, le compte est ouvert pour vous — sans jamais demander votre mot de passe.",
+  rule: "Uniquement la création de comptes Netflix. Pas de comptes partagés, pas de mots de passe stockés. Activation via un canal officiel."
 };
 
 function readShop() {
@@ -210,18 +210,7 @@ function seed() {
   insU.run(sellerId, "Koffi Mensah", "vendeur@streammarket.com", hashPassword("seller123"), "SELLER", "active", now);
 
   const services = [
-    ["svc-stream", "Streaming Premium", "Streaming", "Accès à une offre streaming premium légale, livrée selon les conditions du vendeur vérifié.", 3500, "play", "#e50914", 4.8, 128, ["Accès streaming HD", "Support StreamMarket"], "Usage personnel. Respectez les CGU de l'éditeur."],
-    ["svc-music", "Musique Premium", "Musique", "Abonnement musique en ligne sans publicité, proposé via une offre légale.", 2500, "music", "#1db954", 4.7, 96, ["Écoute illimitée", "Support"], "Usage individuel. Pas de revente de comptes."],
-    ["svc-design", "Design Pro", "Design", "Outils de création graphique pour particuliers et indépendants.", 5000, "pen", "#00c4cc", 4.6, 74, ["Modèles premium", "Export haute qualité"], "Licence selon l'éditeur."],
-    ["svc-cloud", "Cloud Storage", "Stockage", "Espace de stockage cloud pour sauvegarder photos et documents.", 3000, "cloud", "#4285f4", 4.5, 61, ["Stockage sécurisé", "Partage de fichiers"], "Capacité selon le forfait."],
-    ["svc-prod", "Productivity Pro", "Productivité", "Suite bureautique et collaboration pour le travail quotidien.", 4500, "briefcase", "#d83b01", 4.9, 112, ["Documents et tableurs", "Support"], "Licence nominative lorsque requis."],
-    ["svc-netflix", "Netflix", "Streaming", "Offre d'abonnement streaming Netflix commercialisée légalement (pas de comptes partagés).", 4500, "tv", "#b81d24", 4.8, 210, ["Catalogue films & séries", "Assistance commande"], "StreamMarket n'est pas l'éditeur."],
-    ["svc-prime", "Prime Video", "Streaming", "Offre Prime Video proposée via un circuit commercial autorisé.", 3000, "film", "#00a8e1", 4.4, 88, ["Streaming à la demande", "Support commande"], "Usage conforme aux règles de l'éditeur."],
-    ["svc-spotify", "Spotify", "Musique", "Abonnement Spotify Premium via une offre légale, sans identifiants revendus.", 2800, "headphones", "#1db954", 4.7, 154, ["Sans publicité", "Qualité élevée"], "Compte personnel. Aucun mot de passe n'est demandé."],
-    ["svc-canva", "Canva", "Design", "Canva Pro pour créer des visuels professionnels.", 4200, "palette", "#00c4cc", 4.6, 67, ["Éléments Pro", "Brand Kit selon l'offre"], "Licence Canva applicable."],
-    ["svc-m365", "Microsoft 365", "Productivité", "Microsoft 365 en offre légale.", 6500, "windows", "#0f6cbd", 4.9, 143, ["Apps Office", "OneDrive selon plan"], "Activation officielle uniquement."],
-    ["svc-gone", "Google One", "Stockage", "Forfait Google One pour étendre le stockage Drive, Gmail et Photos.", 2200, "google", "#4285f4", 4.5, 52, ["Stockage cloud", "Sauvegarde"], "Compte Google du client, jamais collecté ici."],
-    ["svc-adobe", "Adobe Creative Cloud", "Logiciels", "Suite Creative Cloud via abonnement légal.", 18000, "adobe", "#ff0000", 4.8, 39, ["Apps selon plan", "Mises à jour"], "Adobe ID du client. StreamMarket ne stocke aucun mot de passe Adobe."]
+    ["svc-netflix", "Création de compte Netflix", "Netflix", "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.", 4500, "tv", "#b81d24", 4.8, 0, ["Compte Netflix créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Netflix n'est enregistré."]
   ];
   const insS = db.prepare(
     `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
@@ -233,6 +222,29 @@ function seed() {
 }
 
 seed();
+
+function ensureNetflixOnly() {
+  db.prepare("UPDATE services SET status = 'inactive' WHERE id != 'svc-netflix'").run();
+  const existing = db.prepare("SELECT id FROM services WHERE id = 'svc-netflix'").get();
+  const owner = db.prepare("SELECT id FROM users WHERE role IN ('ADMIN', 'SELLER') ORDER BY role LIMIT 1").get();
+  if (!existing && owner) {
+    db.prepare(
+      `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
+       VALUES ('svc-netflix', ?, 'Création de compte Netflix', 'Netflix', ?, 4500, 1, 'tv', '#b81d24', 'active', 4.8, 0, ?, ?, ?)`
+    ).run(
+      owner.id,
+      "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.",
+      JSON.stringify(["Compte Netflix créé pour le client", "Suivi de la commande"]),
+      "Un compte par client. Aucun mot de passe Netflix n'est enregistré.",
+      "Offre commercialisée légalement via des canaux autorisés. Aucun identifiant, mot de passe ou compte partagé n'est fourni."
+    );
+  } else if (existing) {
+    db.prepare(
+      "UPDATE services SET name = 'Création de compte Netflix', category = 'Netflix', status = 'active', description = ? WHERE id = 'svc-netflix'"
+    ).run("Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.");
+  }
+}
+ensureNetflixOnly();
 
 function notify(userId, message) {
   db.prepare(
@@ -604,28 +616,8 @@ async function handleApi(req, res, url) {
   if (method === "POST" && p === "/api/admin/services") {
     const user = requireUser(req, res);
     if (!user || !requireRoles(user, res, ["ADMIN", "SELLER"])) return;
-    const b = await readBody(req);
-    if (!String(b.name || "").trim() || !Number(b.price)) return send(res, 400, { error: "Nom et prix requis." });
-    const id = uid("svc");
-    db.prepare(
-      `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 5, 0, ?, ?, ?)`
-    ).run(
-      id,
-      user.id,
-      String(b.name).trim(),
-      String(b.category || "Logiciels"),
-      String(b.description || "").trim(),
-      Number(b.price),
-      Number(b.duration) || 1,
-      String(b.image || "cube"),
-      String(b.color || "#5347ff"),
-      b.status === "inactive" ? "inactive" : "active",
-      JSON.stringify(b.includes || ["Offre légale", "Support StreamMarket"]),
-      String(b.conditions || "Usage personnel. Aucun identifiant n'est fourni par la plateforme."),
-      String(b.info || "Offre commercialisée légalement.")
-    );
-    return send(res, 201, { service: mapService(db.prepare("SELECT * FROM services WHERE id = ?").get(id)) });
+    await readBody(req);
+    return send(res, 400, { error: "Une seule offre : la création de compte Netflix. Modifiez son prix au lieu d'en ajouter une autre." });
   }
 
   if ((method === "PUT" || method === "PATCH") && p.startsWith("/api/admin/services/")) {
@@ -636,6 +628,9 @@ async function handleApi(req, res, url) {
     if (!existing) return send(res, 404, { error: "Service introuvable." });
     if (user.role === "SELLER" && existing.seller_id !== user.id) return send(res, 403, { error: "Accès refusé." });
     const b = await readBody(req);
+    if (id !== "svc-netflix" && (b.status == null || b.status === "active")) {
+      return send(res, 400, { error: "Seule la création de compte Netflix peut rester active." });
+    }
     const next = {
       name: b.name != null ? String(b.name).trim() : existing.name,
       category: b.category != null ? String(b.category) : existing.category,
@@ -658,6 +653,7 @@ async function handleApi(req, res, url) {
     const existing = db.prepare("SELECT * FROM services WHERE id = ?").get(id);
     if (!existing) return send(res, 404, { error: "Service introuvable." });
     if (user.role === "SELLER" && existing.seller_id !== user.id) return send(res, 403, { error: "Accès refusé." });
+    if (id === "svc-netflix") return send(res, 400, { error: "L'offre Netflix ne peut pas être supprimée." });
     db.prepare("DELETE FROM services WHERE id = ?").run(id);
     return send(res, 200, { ok: true });
   }
