@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon profil — StreamMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app-shell">
+    <div id="profile-root"></div>
+  </div>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      await SM.boot();
+      SM.initLayout({ dashboard: true, page: "profile.html" });
+      const user = SM.requireAuth();
+      if (!user) return;
+      const root = document.getElementById("profile-root");
+      root.innerHTML =
+        "<h2>Mon profil</h2>" +
+        '<div class="grid" style="grid-template-columns:1fr 1fr;gap:16px">' +
+        '<form class="card" id="name-form"><h3>Identité</h3>' +
+        '<label>Nom</label><input class="input" id="p-name" value="' + user.name.replace(/"/g, "") + '">' +
+        '<p class="muted">' + user.email + " · " + user.role + "</p>" +
+        '<button class="btn btn-primary" type="submit">Enregistrer</button></form>' +
+        '<form class="card" id="pw-form"><h3>Mot de passe</h3>' +
+        '<input class="input" id="p-cur" type="password" placeholder="Mot de passe actuel" style="margin-bottom:8px">' +
+        '<input class="input" id="p-next" type="password" placeholder="Nouveau mot de passe">' +
+        '<p class="muted">Hashé côté serveur. Ne jamais y coller un mot de passe d\'éditeur.</p>' +
+        '<button class="btn btn-primary" type="submit">Changer</button></form></div>';
+      document.getElementById("name-form").onsubmit = function (e) {
+        e.preventDefault();
+        SM.api("/me", { method: "PATCH", body: { name: document.getElementById("p-name").value } })
+          .then(function () { SM.toast("Profil mis à jour."); location.reload(); })
+          .catch(function (err) { SM.toast(err.message, "error"); });
+      };
+      document.getElementById("pw-form").onsubmit = function (e) {
+        e.preventDefault();
+        SM.api("/me/password", {
+          method: "PATCH",
+          body: { current: document.getElementById("p-cur").value, next: document.getElementById("p-next").value }
+        })
+          .then(function () { SM.toast("Mot de passe modifié."); })
+          .catch(function (err) { SM.toast(err.message, "error"); });
+      };
+    });
+  </script>
+</body>
+</html>

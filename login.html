@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — StreamMarket</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app-shell">
+    <div class="container auth-wrap">
+      <div class="card">
+        <h1>Connexion</h1>
+        <p class="muted">Connexion serveur (cookie httpOnly, mot de passe hashé). Ne partagez jamais vos identifiants d'éditeurs.</p>
+        <form id="login-form">
+          <label>Email</label>
+          <input class="input" id="email" type="email" required placeholder="vous@email.com" style="margin:8px 0 14px">
+          <label>Mot de passe</label>
+          <input class="input" id="password" type="password" required style="margin:8px 0 14px">
+          <p id="auth-error" style="color:#dc2626"></p>
+          <button class="btn btn-primary btn-block" type="submit">Se connecter</button>
+        </form>
+        <p class="muted" style="margin-top:14px">Pas de compte ? <a href="register.html">Créer un compte</a></p>
+        <div class="legal-box">Démo admin : admin@streammarket.com / admin123</div>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", async function(){ await SM.boot(); SM.initLayout(); });</script>
+</body>
+</html>
