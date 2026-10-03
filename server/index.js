@@ -14,20 +14,20 @@ const ROOT = path.join(__dirname, "..");
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const IN_PROD = !!(process.env.NODE_ENV === "production" || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT);
 const SESSION_DAYS = 7;
-const DURATION_FACTORS = { 1: 1, 3: 2.7, 6: 5.1, 12: 9.6 };
+const DURATION_PRICES = { 1: 2125, 2: 3625, 3: 5125, 6: 9225 };
 
 const SHOP_FILE = path.join(DATA_DIR, "shop.json");
 const DEFAULT_SHOP = {
   name: "Kiffer Entreprise",
-  owner: "Kiffer Entreprise",
+  owner: "Koffi Mémoire",
   city: "",
-  whatsapp: "22965481284",
-  momoMtn: "65 48 12 84",
-  momoMoov: "65 48 12 84",
-  headline: "Kiffer Entreprise — création de comptes Netflix.",
+  whatsapp: "2290165481284",
+  momoMtn: "01 96 89 93 11",
+  momoMoov: "01 65 48 12 84",
+  headline: "Kiffer Entreprise — comptes Netflix et Prime Video.",
   tagline:
-    "Un seul service : la création de votre compte Netflix. Vous commandez, vous payez au 65 48 12 84, le compte est ouvert pour vous — sans jamais demander votre mot de passe.",
-  rule: "Uniquement la création de comptes Netflix. Pas de comptes partagés, pas de mots de passe stockés. Activation via un canal officiel."
+    "Netflix ou Prime Video : vous commandez, vous payez à Koffi Mémoire, le compte est ouvert pour vous. Aucun mot de passe n'est demandé.",
+  rule: "Création de comptes Netflix et Prime Video. Pas de comptes partagés, pas de mots de passe stockés. Activation via un canal officiel."
 };
 
 function readShop() {
@@ -210,7 +210,8 @@ function seed() {
   insU.run(sellerId, "Koffi Mensah", "vendeur@streammarket.com", hashPassword("seller123"), "SELLER", "active", now);
 
   const services = [
-    ["svc-netflix", "Création de compte Netflix", "Streaming", "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.", 4500, "tv", "#b81d24", 4.8, 0, ["Compte Netflix créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Netflix n'est enregistré."]
+    ["svc-netflix", "Création de compte Netflix", "Streaming", "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.", 2125, "tv", "#b81d24", 4.8, 0, ["Compte Netflix créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Netflix n'est enregistré."],
+    ["svc-prime", "Création de compte Prime Video", "Streaming", "Ouverture d'un compte Prime Video pour un client. Activation officielle, sans mot de passe stocké ici.", 2125, "film", "#00a8e1", 4.7, 0, ["Compte Prime Video créé pour le client", "Suivi de la commande"], "Un compte par client. Aucun mot de passe Prime Video n'est enregistré."]
   ];
   const insS = db.prepare(
     `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
@@ -223,28 +224,46 @@ function seed() {
 
 seed();
 
-function ensureNetflixOnly() {
-  db.prepare("UPDATE services SET status = 'inactive' WHERE id != 'svc-netflix'").run();
-  const existing = db.prepare("SELECT id FROM services WHERE id = 'svc-netflix'").get();
+function ensureOffers() {
+  const legal =
+    "Offre commercialisée légalement via des canaux autorisés. Aucun identifiant, mot de passe ou compte partagé n'est fourni.";
+  const catalog = [
+    {
+      id: "svc-netflix",
+      name: "Création de compte Netflix",
+      description: "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.",
+      image: "tv",
+      color: "#b81d24",
+      includes: ["Compte Netflix créé pour le client", "Suivi de la commande"],
+      conditions: "Un compte par client. Aucun mot de passe Netflix n'est enregistré."
+    },
+    {
+      id: "svc-prime",
+      name: "Création de compte Prime Video",
+      description: "Ouverture d'un compte Prime Video pour un client. Activation officielle, sans mot de passe stocké ici.",
+      image: "film",
+      color: "#00a8e1",
+      includes: ["Compte Prime Video créé pour le client", "Suivi de la commande"],
+      conditions: "Un compte par client. Aucun mot de passe Prime Video n'est enregistré."
+    }
+  ];
+  db.prepare("UPDATE services SET status = 'inactive' WHERE id NOT IN ('svc-netflix', 'svc-prime')").run();
   const owner = db.prepare("SELECT id FROM users WHERE role IN ('ADMIN', 'SELLER') ORDER BY role LIMIT 1").get();
-  if (!existing && owner) {
-    db.prepare(
-      `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
-       VALUES ('svc-netflix', ?, 'Création de compte Netflix', 'Streaming', ?, 4500, 1, 'tv', '#b81d24', 'active', 4.8, 0, ?, ?, ?)`
-    ).run(
-      owner.id,
-      "Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.",
-      JSON.stringify(["Compte Netflix créé pour le client", "Suivi de la commande"]),
-      "Un compte par client. Aucun mot de passe Netflix n'est enregistré.",
-      "Offre commercialisée légalement via des canaux autorisés. Aucun identifiant, mot de passe ou compte partagé n'est fourni."
-    );
-  } else if (existing) {
-    db.prepare(
-      "UPDATE services SET name = 'Création de compte Netflix', category = 'Streaming', status = 'active', description = ? WHERE id = 'svc-netflix'"
-    ).run("Ouverture d'un compte Netflix pour un client. Activation officielle, sans mot de passe stocké ici.");
-  }
+  catalog.forEach(function (offer) {
+    const existing = db.prepare("SELECT id FROM services WHERE id = ?").get(offer.id);
+    if (!existing && owner) {
+      db.prepare(
+        `INSERT INTO services (id, seller_id, name, category, description, price, duration, image, color, status, rating, orders_count, includes_json, conditions, info)
+         VALUES (?, ?, ?, 'Streaming', ?, 2125, 1, ?, ?, 'active', 4.8, 0, ?, ?, ?)`
+      ).run(offer.id, owner.id, offer.name, offer.description, offer.image, offer.color, JSON.stringify(offer.includes), offer.conditions, legal);
+    } else if (existing) {
+      db.prepare(
+        "UPDATE services SET name = ?, category = 'Streaming', status = 'active', description = ?, price = 2125, image = ?, color = ? WHERE id = ?"
+      ).run(offer.name, offer.description, offer.image, offer.color, offer.id);
+    }
+  });
 }
-ensureNetflixOnly();
+ensureOffers();
 
 function notify(userId, message) {
   db.prepare(
@@ -336,7 +355,8 @@ function cookieFromExtra(extra) {
 }
 
 function priceForDuration(base, months) {
-  return Math.round(base * (DURATION_FACTORS[months] || months));
+  if (DURATION_PRICES[months]) return DURATION_PRICES[months];
+  return Math.round(Number(base) * Number(months) || 0);
 }
 
 function normalizePhone(phone) {
@@ -590,7 +610,7 @@ async function handleApi(req, res, url) {
       if (!svc) return send(res, 400, { error: "Une offre n'est plus disponible." });
       const months = Number(it.months);
       const qty = Math.max(1, Number(it.quantity) || 1);
-      if (![1, 3, 6, 12].includes(months)) return send(res, 400, { error: "Durée invalide." });
+      if (!DURATION_PRICES[months]) return send(res, 400, { error: "Durée invalide." });
       const unit = priceForDuration(svc.price, months);
       items.push({ serviceId: svc.id, name: svc.name, months: months, quantity: qty, unitPrice: unit });
       total += unit * qty;
@@ -617,7 +637,7 @@ async function handleApi(req, res, url) {
     const user = requireUser(req, res);
     if (!user || !requireRoles(user, res, ["ADMIN", "SELLER"])) return;
     await readBody(req);
-    return send(res, 400, { error: "Une seule offre : la création de compte Netflix. Modifiez son prix au lieu d'en ajouter une autre." });
+    return send(res, 400, { error: "Les offres sont Netflix et Prime Video. Modifiez un tarif au lieu d'en ajouter une autre." });
   }
 
   if ((method === "PUT" || method === "PATCH") && p.startsWith("/api/admin/services/")) {
@@ -628,8 +648,8 @@ async function handleApi(req, res, url) {
     if (!existing) return send(res, 404, { error: "Service introuvable." });
     if (user.role === "SELLER" && existing.seller_id !== user.id) return send(res, 403, { error: "Accès refusé." });
     const b = await readBody(req);
-    if (id !== "svc-netflix" && (b.status == null || b.status === "active")) {
-      return send(res, 400, { error: "Seule la création de compte Netflix peut rester active." });
+    if (id !== "svc-netflix" && id !== "svc-prime" && (b.status == null || b.status === "active")) {
+      return send(res, 400, { error: "Seuls Netflix et Prime Video peuvent rester actifs." });
     }
     const next = {
       name: b.name != null ? String(b.name).trim() : existing.name,
@@ -653,7 +673,7 @@ async function handleApi(req, res, url) {
     const existing = db.prepare("SELECT * FROM services WHERE id = ?").get(id);
     if (!existing) return send(res, 404, { error: "Service introuvable." });
     if (user.role === "SELLER" && existing.seller_id !== user.id) return send(res, 403, { error: "Accès refusé." });
-    if (id === "svc-netflix") return send(res, 400, { error: "L'offre Netflix ne peut pas être supprimée." });
+    if (id === "svc-netflix" || id === "svc-prime") return send(res, 400, { error: "Cette offre ne peut pas être supprimée." });
     db.prepare("DELETE FROM services WHERE id = ?").run(id);
     return send(res, 200, { ok: true });
   }

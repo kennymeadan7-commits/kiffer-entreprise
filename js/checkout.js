@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (!root) return;
   if (!SM.cart().length) {
     root.innerHTML =
-      '<div class="empty"><h3>Panier vide</h3><p><a class="btn btn-primary" href="service-details.html?id=svc-netflix">Commander Netflix</a></p></div>';
+      '<div class="empty"><h3>Panier vide</h3><p><a class="btn btn-primary" href="services.html">Voir les offres</a></p></div>';
     return;
   }
   const user = SM.currentUser();
@@ -76,8 +76,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       "\nWhatsApp : " +
       state.customer.phone +
       (o ? "\nCommande : " + o.id : "") +
-      "\nJe paie au " +
-      (shop.momoMtn || "65 48 12 84") +
+      "\nPaiement au nom de " +
+      (shop.owner || "Koffi Mémoire") +
+      "\nMTN MoMo : " +
+      (shop.momoMtn || "01 96 89 93 11") +
+      "\nMoov Money : " +
+      (shop.momoMoov || "01 65 48 12 84") +
       "."
     );
   }
@@ -96,21 +100,22 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (state.step === 1) {
       body =
         '<div class="card"><h3>Commander sans compte</h3>' +
-        "<p class='muted'>Nom et WhatsApp suffisent. Aucun mot de passe Netflix n'est demandé.</p>" +
+        "<p class='muted'>Nom et WhatsApp suffisent. Aucun mot de passe n'est demandé.</p>" +
         '<label>Votre nom</label><input class="input" id="c-name" value="' +
         escapeAttr(state.customer.name) +
         '" placeholder="Ex. Jean">' +
         '<label>Votre WhatsApp</label><input class="input" id="c-phone" inputmode="tel" value="' +
         escapeAttr(state.customer.phone) +
-        '" placeholder="Ex. 65 48 12 84">' +
+        '" placeholder="Ex. 01 96 89 93 11">' +
         recapHtml() +
         '<button class="btn btn-primary btn-block" id="next">Continuer</button></div>';
     }
     if (state.step === 2) {
       const shop = SM.shop();
+      const holder = shop.owner ? " — " + shop.owner : "";
       const momo =
-        (shop.momoMtn ? "<p>MTN MoMo : <strong>" + shop.momoMtn + "</strong></p>" : "") +
-        (shop.momoMoov ? "<p>Moov Money : <strong>" + shop.momoMoov + "</strong></p>" : "");
+        (shop.momoMtn ? "<p>MTN MoMo : <strong>" + shop.momoMtn + "</strong>" + holder + "</p>" : "") +
+        (shop.momoMoov ? "<p>Moov Money : <strong>" + shop.momoMoov + "</strong>" + holder + "</p>" : "");
       body =
         '<div class="card"><h3>Paiement</h3>' +
         recapHtml() +
@@ -119,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           : "") +
         '<label class="pay-option"><input type="radio" name="pay" value="momo" checked> J\'envoie le MoMo / Moov</label>' +
         '<label class="pay-option"><input type="radio" name="pay" value="manual"> Je paie après contact WhatsApp</label>' +
-        '<p class="legal-box">Pas de carte bancaire. Pas de mot de passe Netflix.</p>' +
+        '<p class="legal-box">Pas de carte bancaire. Pas de mot de passe Netflix ni Prime Video.</p>' +
         '<div class="btn-row"><button class="btn btn-ghost" id="back">Retour</button><button class="btn btn-primary" id="next">Valider la commande</button></div></div>';
     }
     if (state.step === 3) {

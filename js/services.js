@@ -167,10 +167,10 @@ function renderDetail() {
       '<p class="price" id="dyn-price" style="font-size:28px;margin:16px 0">' + SM.formatMoney(price()) + "</p>" +
       '<button class="btn btn-primary btn-block" id="buy-now">Commander maintenant</button>' +
       '<button class="btn btn-ghost btn-block" id="add-cart" style="margin-top:8px">Ajouter au panier</button>' +
-      '<p class="muted">Sans créer de compte : nom + WhatsApp. Aucun mot de passe Netflix.</p>' +
+      '<p class="muted">Sans créer de compte : nom + WhatsApp. Aucun mot de passe n\'est demandé.</p>' +
       "</aside></div></div>";
     const pills = document.getElementById("pills");
-    [1, 3, 6, 12].forEach(function (m) {
+    [1, 2, 3, 6].forEach(function (m) {
       const b = document.createElement("button");
       b.className = "pill" + (m === months ? " active" : "");
       b.textContent = m + " mois · " + SM.formatMoney(SM.priceForDuration(s.price, m));

@@ -86,8 +86,8 @@ function renderAdminHome() {
     const clients = stats.lastClients || [];
     SM.cache.orders = stats.recentOrders || SM.orders();
     root.innerHTML =
-      "<h2>Clients Netflix</h2>" +
-      '<p class="muted">Comptes clients et commandes de création Netflix. Les mots de passe ne sont jamais affichés.</p>' +
+      "<h2>Clients</h2>" +
+      '<p class="muted">Comptes clients et commandes Netflix ou Prime Video. Les mots de passe ne sont jamais affichés.</p>' +
       '<div class="kpi">' +
       kpi("Chiffre d'affaires", SM.formatMoney(stats.revenue)) +
       kpi("Commandes", stats.ordersCount) +
@@ -168,7 +168,7 @@ function renderAdminServices() {
       })
       .join("");
     root.innerHTML =
-      '<div class="page-head"><h2>Offre Netflix</h2></div>' +
+      '<div class="page-head"><h2>Netflix et Prime Video</h2></div>' +
       '<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Durée</th><th>Statut</th><th></th></tr></thead><tbody>' +
       rows +
       "</tbody></table></div>";
@@ -350,7 +350,7 @@ function renderAdminUsers() {
       })
       .join("");
     root.innerHTML =
-      "<h2>Mes clients Netflix</h2>" +
+      "<h2>Mes clients</h2>" +
       '<p class="muted">Chaque personne qui commande a son espace. Vous pouvez en suivre autant que vous voulez.</p>' +
       '<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Email</th><th>Inscription</th><th>Commandes</th><th>Total dépensé</th><th>Statut</th><th></th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="7">Aucun utilisateur</td></tr>') +

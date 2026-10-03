@@ -12,7 +12,7 @@
     seeded: "sm_seeded_v2"
   };
 
-  const DURATION_FACTORS = { 1: 1, 3: 2.7, 6: 5.1, 12: 9.6 };
+  const DURATION_PRICES = { 1: 2125, 2: 3625, 3: 5125, 6: 9225 };
 
   const CATEGORIES = [
     "Streaming",
@@ -95,7 +95,8 @@
   }
 
   function priceForDuration(basePrice, months) {
-    return Math.round(basePrice * (DURATION_FACTORS[months] || months));
+    if (DURATION_PRICES[months]) return DURATION_PRICES[months];
+    return Math.round(Number(basePrice) * Number(months) || 0);
   }
 
   function statusLabel(status) {
@@ -601,7 +602,7 @@
       "<div><strong>" +
       shopName +
       "</strong><div class='muted'>" +
-      (shop.owner ? "Comptes Netflix de " + shop.owner : "Création de comptes Netflix") +
+      (shop.owner ? "Netflix et Prime Video · " + shop.owner : "Netflix et Prime Video") +
       (shop.city ? " · " + shop.city : "") +
       "</div></div>" +
       "<div>" +
@@ -620,12 +621,12 @@
       ["dashboard.html", "fa-gauge-high", "Tableau de bord"],
       ["orders.html", "fa-receipt", "Mes commandes"],
       ["profile.html", "", "Mon profil"],
-      ["services.html", "fa-tv", "Netflix"],
+      ["services.html", "fa-tv", "Offres"],
       ["cart.html", "fa-bag-shopping", "Panier"]
     ];
     const adminLinks = [
       ["dashboard.html", "fa-chart-line", "Vue d'ensemble"],
-      ["admin-services.html", "fa-tv", "Offre Netflix"],
+      ["admin-services.html", "fa-tv", "Offres"],
       ["admin-orders.html", "fa-clipboard-list", "Commandes"],
       ["vend.html", "", "Téléphone"],
       ["admin-users.html", "fa-users", "Mes clients"],
